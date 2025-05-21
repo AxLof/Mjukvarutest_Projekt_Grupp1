@@ -1,6 +1,7 @@
-﻿using System.Data;
+﻿using PersonalRegister.Interfaces;
+using System.Data;
 
-namespace PersonalRegister
+namespace PersonalRegister.GUI
 {
     public partial class CRUDForm : Form
     {
@@ -38,17 +39,17 @@ namespace PersonalRegister
 
         private void InitializeComponent()
         {
-            buttonCreate = new Button { Text = "Lägg till anställd", Location = new System.Drawing.Point(100, 50), Size = new System.Drawing.Size(200, 40) };
-            buttonRead = new Button { Text = "Visa anställda(DataTable)", Location = new System.Drawing.Point(100, 110), Size = new System.Drawing.Size(200, 40) };
-            buttonUpdate = new Button { Text = "Uppdatera anställd", Location = new System.Drawing.Point(100, 170), Size = new System.Drawing.Size(200, 40) };
-            buttonDelete = new Button { Text = "Ta bort anställd", Location = new System.Drawing.Point(100, 230), Size = new System.Drawing.Size(200, 40) };
-            buttonFetch = new Button { Text = "Hämta anställd", Location = new System.Drawing.Point(350, 80), Size = new System.Drawing.Size(150, 40) };
-            buttonQuickFetch = new Button { Text = "Hämta anställd(Dictonary)", Location = new System.Drawing.Point(510, 80), Size = new System.Drawing.Size(150, 40) };
-            buttonShowList = new Button { Text = "Visa anställda(Lista)", Location = new System.Drawing.Point(350, 130), Size = new System.Drawing.Size(150, 40) };
-            buttonShowDictionary = new Button { Text = "Visa anställda(Dictionary)", Location = new System.Drawing.Point(510, 130), Size = new System.Drawing.Size(150, 40) };
+            buttonCreate = new Button { Text = "Lägg till anställd", Location = new Point(100, 50), Size = new Size(200, 40) };
+            buttonRead = new Button { Text = "Visa anställda(DataTable)", Location = new Point(100, 110), Size = new Size(200, 40) };
+            buttonUpdate = new Button { Text = "Uppdatera anställd", Location = new Point(100, 170), Size = new Size(200, 40) };
+            buttonDelete = new Button { Text = "Ta bort anställd", Location = new Point(100, 230), Size = new Size(200, 40) };
+            buttonFetch = new Button { Text = "Hämta anställd", Location = new Point(350, 80), Size = new Size(150, 40) };
+            buttonQuickFetch = new Button { Text = "Hämta anställd(Dictonary)", Location = new Point(510, 80), Size = new Size(150, 40) };
+            buttonShowList = new Button { Text = "Visa anställda(Lista)", Location = new Point(350, 130), Size = new Size(150, 40) };
+            buttonShowDictionary = new Button { Text = "Visa anställda(Dictionary)", Location = new Point(510, 130), Size = new Size(150, 40) };
 
-            textUniqueID = new TextBox { Location = new System.Drawing.Point(350, 50), Size = new System.Drawing.Size(150, 20), PlaceholderText = "Ange Unik ID" };
-            dataGridView = new DataGridView { Location = new System.Drawing.Point(50, 300), Size = new System.Drawing.Size(600, 200), AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill };
+            textUniqueID = new TextBox { Location = new Point(350, 50), Size = new Size(150, 20), PlaceholderText = "Ange Unik ID" };
+            dataGridView = new DataGridView { Location = new Point(50, 300), Size = new Size(600, 200), AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill };
 
             // Lägg till knappar och andra kontroller
             Controls.AddRange(new Control[] { buttonCreate, buttonRead, buttonUpdate, buttonDelete, buttonFetch, buttonQuickFetch, buttonShowList, buttonShowDictionary, textUniqueID, dataGridView });
@@ -63,7 +64,7 @@ namespace PersonalRegister
             buttonShowList.Click += buttonShowList_Click;
             buttonShowDictionary.Click += buttonShowDictionary_Click;
 
-            ClientSize = new System.Drawing.Size(700, 600);
+            ClientSize = new Size(700, 600);
             Text = "Register Hanterare";
         }
 

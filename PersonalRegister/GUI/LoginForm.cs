@@ -1,3 +1,6 @@
+using PersonalRegister.GUI;
+using PersonalRegister.Interfaces;
+
 namespace PersonalRegister
 {
     public partial class LoginForm : Form

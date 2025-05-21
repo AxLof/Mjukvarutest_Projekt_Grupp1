@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PersonalRegister
+namespace PersonalRegister.Interfaces
 {
     public interface IUserOperations
     {

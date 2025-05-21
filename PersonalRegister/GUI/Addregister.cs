@@ -2,7 +2,7 @@
 using System.Data.SQLite;
 using System.Windows.Forms;
 
-namespace PersonalRegister
+namespace PersonalRegister.GUI
 {
     public partial class RegisterForm : Form
     {
@@ -23,44 +23,44 @@ namespace PersonalRegister
 
         private void InitializeComponent()
         {
-            this.labelID = new Label();
-            this.textID = new TextBox();
-            this.labelRole = new Label();
-            this.textRole = new TextBox();
-            this.buttonSave = new Button();
+            labelID = new Label();
+            textID = new TextBox();
+            labelRole = new Label();
+            textRole = new TextBox();
+            buttonSave = new Button();
 
             // labelID
-            this.labelID.Text = "Unik ID:";
-            this.labelID.Location = new System.Drawing.Point(10, 10);
-            this.labelID.Size = new System.Drawing.Size(100, 20);
+            labelID.Text = "Unik ID:";
+            labelID.Location = new Point(10, 10);
+            labelID.Size = new Size(100, 20);
 
             // textID
-            this.textID.Location = new System.Drawing.Point(120, 10);
-            this.textID.Size = new System.Drawing.Size(100, 20);
-            this.textID.ReadOnly = true;
+            textID.Location = new Point(120, 10);
+            textID.Size = new Size(100, 20);
+            textID.ReadOnly = true;
 
             // labelRole
-            this.labelRole.Text = "Roll:";
-            this.labelRole.Location = new System.Drawing.Point(10, 40);
-            this.labelRole.Size = new System.Drawing.Size(100, 20);
+            labelRole.Text = "Roll:";
+            labelRole.Location = new Point(10, 40);
+            labelRole.Size = new Size(100, 20);
 
             // textRole
-            this.textRole.Location = new System.Drawing.Point(120, 40);
-            this.textRole.Size = new System.Drawing.Size(100, 20);
+            textRole.Location = new Point(120, 40);
+            textRole.Size = new Size(100, 20);
 
             // buttonSave
-            this.buttonSave.Text = "Spara";
-            this.buttonSave.Location = new System.Drawing.Point(120, 70);
-            this.buttonSave.Click += new EventHandler(this.buttonSave_Click!);
+            buttonSave.Text = "Spara";
+            buttonSave.Location = new Point(120, 70);
+            buttonSave.Click += new EventHandler(this.buttonSave_Click!);
 
             // RegisterForm
-            this.ClientSize = new System.Drawing.Size(250, 120);
-            this.Controls.Add(this.labelID);
-            this.Controls.Add(this.textID);
-            this.Controls.Add(this.labelRole);
-            this.Controls.Add(this.textRole);
-            this.Controls.Add(this.buttonSave);
-            this.Text = "Registrera ny användare";
+            ClientSize = new Size(250, 120);
+            Controls.Add(labelID);
+            Controls.Add(textID);
+            Controls.Add(labelRole);
+            Controls.Add(textRole);
+            Controls.Add(buttonSave);
+            Text = "Registrera ny användare";
         }
 
         private void GenerateUniqueID()
@@ -86,8 +86,8 @@ namespace PersonalRegister
             buttonSave.Enabled = false; // Inaktivera knappen för att förhindra dubbletter
             SaveEmployeeToDatabase(UniqueID, Role);
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void SaveEmployeeToDatabase(string uniqueID, string role)
