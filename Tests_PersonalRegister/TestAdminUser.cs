@@ -1,7 +1,11 @@
+using Microsoft.VisualBasic.ApplicationServices;
 using Moq;
 using PersonalRegister;
 using PersonalRegister.Interfaces;
+using System.Collections.Generic;
 using System.Data;
+using static System.Data.Entity.Infrastructure.Design.Executor;
+using System.Xml;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Tests_PersonalRegister
