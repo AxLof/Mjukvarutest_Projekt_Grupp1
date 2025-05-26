@@ -10,9 +10,11 @@ namespace PersonalRegister
     {
         private List<string> employeeList = new List<string>(); // Lista för anställda
         private Dictionary<string, string> employeeDictionary = new Dictionary<string, string>(); // Dictionary för anställda
+        private readonly IDatabaseHelper _databaseHelper;
 
-        public AdminUser()
+        public AdminUser(IDatabaseHelper databaseHelper)
         {
+            _databaseHelper = databaseHelper;
             LoadEmployeesFromDatabase(); // Ladda anställda från databasen när klassen initieras
         }
 
@@ -22,7 +24,7 @@ namespace PersonalRegister
             employeeList.Clear();
             employeeDictionary.Clear();
 
-            DataTable employees = DatabaseHelper.ExecuteQuery("SELECT UniqueID, Role FROM Users");
+            DataTable employees = _databaseHelper.ExecuteQuery("SELECT UniqueID, Role FROM Users");
             foreach (DataRow row in employees.Rows)
             {
                 string uniqueID = row["UniqueID"]?.ToString() ?? string.Empty;
@@ -42,7 +44,7 @@ namespace PersonalRegister
         // CRUD för Employees i databasen
         public void AddEmployee(string uniqueID, string role)
         {
-            DatabaseHelper.ExecuteNonQuery(
+            _databaseHelper.ExecuteNonQuery(
                 "INSERT INTO Users (UniqueID, Role) VALUES (@UniqueID, @Role)",
                 new SQLiteParameter("@UniqueID", uniqueID),
                 new SQLiteParameter("@Role", role)
@@ -56,12 +58,12 @@ namespace PersonalRegister
 
         public DataTable GetAllEmployees()
         {
-            return DatabaseHelper.ExecuteQuery("SELECT * FROM Users");
+            return _databaseHelper.ExecuteQuery("SELECT * FROM Users");
         }
 
         public DataTable GetEmployeeById(string uniqueID)
         {
-            return DatabaseHelper.ExecuteQuery(
+            return _databaseHelper.ExecuteQuery(
                 "SELECT * FROM Users WHERE UniqueID = @UniqueID",
                 new SQLiteParameter("@UniqueID", uniqueID)
             );
@@ -69,7 +71,7 @@ namespace PersonalRegister
 
         public void UpdateEmployee(string uniqueID, string newRole)
         {
-            DatabaseHelper.ExecuteNonQuery(
+            _databaseHelper.ExecuteNonQuery(
                 "UPDATE Users SET Role = @Role WHERE UniqueID = @UniqueID",
                 new SQLiteParameter("@Role", newRole),
                 new SQLiteParameter("@UniqueID", uniqueID)
@@ -94,7 +96,7 @@ namespace PersonalRegister
 
         public void DeleteEmployee(string uniqueID)
         {
-            DatabaseHelper.ExecuteNonQuery(
+            _databaseHelper.ExecuteNonQuery(
                 "DELETE FROM Users WHERE UniqueID = @UniqueID",
                 new SQLiteParameter("@UniqueID", uniqueID)
             );

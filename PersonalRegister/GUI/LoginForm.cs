@@ -8,6 +8,7 @@ namespace PersonalRegister
         private readonly Admin admin = new Admin();
         private readonly Register register = new Register();
         private readonly Receptionist receptionist = new Receptionist();
+        private DatabaseHelper databaseHelper = new DatabaseHelper();
 
         public LoginForm()
         {
@@ -49,7 +50,7 @@ namespace PersonalRegister
                 return;
             }
 
-            var crudForm = new CRUDForm(userPermissions);
+            var crudForm = new CRUDForm(userPermissions, databaseHelper);
             crudForm.Show();
             this.Hide();
         }

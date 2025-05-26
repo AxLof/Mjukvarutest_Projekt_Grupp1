@@ -1,9 +1,10 @@
-﻿using System.Data;
+﻿using PersonalRegister.Interfaces;
+using System.Data;
 using System.Data.SQLite;
 
 namespace PersonalRegister
 {
-    public class DatabaseHelper
+    public class DatabaseHelper : IDatabaseHelper
     {
         private static string dbPath = "Data Source=PersonalRegister.db;Version=3;Pooling=False;";
 
@@ -50,7 +51,7 @@ namespace PersonalRegister
             return new SQLiteConnection(dbPath);
         }
 
-        public static void ExecuteNonQuery(string query, params SQLiteParameter[] parameters)
+        public void ExecuteNonQuery(string query, params SQLiteParameter[] parameters)
         {
             using (var connection = new SQLiteConnection(dbPath))
             {
@@ -63,7 +64,7 @@ namespace PersonalRegister
             }
         }
 
-        public static DataTable ExecuteQuery(string query, params SQLiteParameter[] parameters)
+        public DataTable ExecuteQuery(string query, params SQLiteParameter[] parameters)
         {
             using (var connection = new SQLiteConnection(dbPath))
             {

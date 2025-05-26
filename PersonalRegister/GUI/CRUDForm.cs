@@ -8,7 +8,6 @@ namespace PersonalRegister.GUI
         private readonly AdminUser adminUser;
         private readonly IRolePermissions permissions;
 
-
         private DataGridView dataGridView = null!;
         private Button buttonCreate = null!;
         private Button buttonRead = null!;
@@ -20,10 +19,10 @@ namespace PersonalRegister.GUI
         private Button buttonShowDictionary = null!;
         private TextBox textUniqueID = null!;
 
-        public CRUDForm(IRolePermissions userPermissions)
+        public CRUDForm(IRolePermissions userPermissions, IDatabaseHelper databaseHelper)
         {
             permissions = userPermissions;
-            adminUser = new AdminUser();
+            adminUser = new AdminUser(databaseHelper);
             InitializeComponent();
             ApplyPermissions();
         }
