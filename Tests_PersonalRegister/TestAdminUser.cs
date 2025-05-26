@@ -81,5 +81,52 @@ namespace Tests_PersonalRegister
             Assert.Contains("TEST123", employeeDict.Keys);
             Assert.Contains("APA", employeeDict.Values);
         }
+
+        [Fact]
+        public void UpdateEmployee_UpdatesCorrectEmployee()
+        {
+            DataTable testTable = new DataTable();
+            testTable.Columns.Add("UniqueID", typeof(string));
+            testTable.Columns.Add("Role", typeof(string));
+            testTable.Rows.Add("7462E", "Bee");
+
+            var mockDatabaseHelper = new Mock<IDatabaseHelper>();
+            mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Returns(testTable);
+            mockDatabaseHelper.Setup(db => db.ExecuteNonQuery("UPDATE Users SET Role = @Role " +
+                                                              "WHERE UniqueID = @UniqueID"));
+
+            AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
+            testUser.UpdateEmployee("7462E", "APA");
+            var employeeList = testUser.GetAllEmployeesList();
+            var employeeDict = testUser.GetAllEmployeesDictionary();
+
+            Assert.Equal("7462E: APA", employeeList[0]);
+            Assert.Equal("7462E", employeeDict.Keys.First());
+            Assert.Equal("APA", employeeDict.Values.First());
+        }
+
+        [Fact]
+        public void DeleteEmployee_DeletesCorrectEmployee()
+        {
+            DataTable testTable = new DataTable();
+            testTable.Columns.Add("UniqueID", typeof(string));
+            testTable.Columns.Add("Role", typeof(string));
+            testTable.Rows.Add("7462E", "Bee");
+
+            var mockDatabaseHelper = new Mock<IDatabaseHelper>();
+            mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Returns(testTable);
+            mockDatabaseHelper.Setup(db => db.ExecuteNonQuery("DELETE FROM Users " +
+                                                              "WHERE UniqueID = @UniqueID"));
+
+            AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
+            testUser.DeleteEmployee("7462E");
+            var employeeList = testUser.GetAllEmployeesList();
+            var employeeDict = testUser.GetAllEmployeesDictionary();
+
+            Assert.Empty(employeeList);
+            Assert.Empty(employeeDict);
+        }
     }
 }
