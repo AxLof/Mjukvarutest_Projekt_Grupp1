@@ -216,5 +216,17 @@ namespace Tests_PersonalRegister
                         || lowercaseOutput.Contains("togs bort") || lowercaseOutput.Contains("raderades"));
 
         }
+
+        [Fact]
+        public void TestConnectionRefused_ThrowsSQLError()
+        {
+            var mockDatabaseHelper = new Mock<IDatabaseHelper>();
+            mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Throws(new SQLiteException("Connection failed"));
+
+            var thrownException = Record.Exception(() => new AdminUser(mockDatabaseHelper.Object));
+
+            Assert.Null(thrownException);
+        }
     }
 }
