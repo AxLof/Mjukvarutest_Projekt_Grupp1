@@ -7,6 +7,9 @@ using System.Data;
 using static System.Data.Entity.Infrastructure.Design.Executor;
 using System.Xml;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Data.SQLite;
+using System.Windows.Forms;
+using NuGet.Frameworks;
 
 namespace Tests_PersonalRegister
 {
@@ -127,6 +130,91 @@ namespace Tests_PersonalRegister
 
             Assert.Empty(employeeList);
             Assert.Empty(employeeDict);
+        }
+
+
+        // https://stackoverflow.com/questions/45017295/assert-an-exception-using-xunit
+        [Theory]
+        [InlineData("7462E")]
+        [InlineData("")]
+        public void AddEmplyeeBadInput_ThrowsSQLException(string key)
+        {
+            DataTable testTable = new DataTable();
+            testTable.Columns.Add("UniqueID", typeof(string));
+            testTable.Columns.Add("Role", typeof(string));
+            testTable.Rows.Add("7462E", "Bee");
+
+            var mockDatabaseHelper = new Mock<IDatabaseHelper>();
+            mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Returns(testTable);
+
+            mockDatabaseHelper.Setup(db => db.ExecuteNonQuery("INSERT INTO Users (UniqueID, Role) " +
+                                                             "VALUES (@UniqueID, @Role)",
+                                                              It.IsAny<SQLiteParameter[]>()))
+                .Throws(new SQLiteException("UNIQCUE CONSTRAIANT Users.UniqueID.PK VIOLATED"));
+
+            AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
+
+            var thrownExceptions = Record.Exception(() => testUser.AddEmployee(key, "APA"));
+            Assert.Null(thrownExceptions);
+
+        }
+
+        // vet ej vad jag ska döpa denna till
+        [Fact]
+        public void UpdateEmployeeBadInput_NoUppdateConfirmation()
+        {
+            DataTable testTable = new DataTable();
+            testTable.Columns.Add("UniqueID", typeof(string));
+            testTable.Columns.Add("Role", typeof(string));
+
+            var mockDatabaseHelper = new Mock<IDatabaseHelper>();
+            mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Returns(testTable);
+
+            mockDatabaseHelper.Setup(db => db.ExecuteNonQuery("UPDATE Users SET Role = @Role " +
+                                                              "WHERE UniqueID = @UniqueID",
+                                                              It.IsAny<SQLiteParameter[]>()));
+
+            var consoleOutput = new StringWriter();
+            Console.SetOut(consoleOutput);
+
+            AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
+            testUser.UpdateEmployee("BJE43E", "APA");
+
+            // Kollar så att inget "success" meddelande visas om man uppdaterar en användare som inte finns.
+            string lowercaseOutput = consoleOutput.ToString().ToLower();
+            Assert.False(lowercaseOutput.Contains("uppdaterad") || lowercaseOutput.Contains("uppdaterades")
+                        || lowercaseOutput.Contains("lyckades") || lowercaseOutput.Contains("lyckad"));
+            
+        }
+
+        [Fact]
+        public void DeleteEmployeeBadInput_NoDeleteConfirmation()
+        {
+            DataTable testTable = new DataTable();
+            testTable.Columns.Add("UniqueID", typeof(string));
+            testTable.Columns.Add("Role", typeof(string));
+
+            var mockDatabaseHelper = new Mock<IDatabaseHelper>();
+            mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Returns(testTable);
+
+            mockDatabaseHelper.Setup(db => db.ExecuteNonQuery("DELETE FROM Users " +
+                                                              "WHERE UniqueID = @UniqueID",
+                                                              It.IsAny<SQLiteParameter[]>()));
+
+            var consoleOutput = new StringWriter();
+            Console.SetOut(consoleOutput);
+
+            AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
+            testUser.DeleteEmployee("BJE43E");
+
+            // Kollar så att inget "success" meddelande visas om man uppdaterar en användare som inte finns.
+            string lowercaseOutput = consoleOutput.ToString().ToLower();
+            Assert.False(lowercaseOutput.Contains("borttagen") || lowercaseOutput.Contains("raderad")
+                        || lowercaseOutput.Contains("togs bort") || lowercaseOutput.Contains("raderades"));
+
         }
     }
 }
