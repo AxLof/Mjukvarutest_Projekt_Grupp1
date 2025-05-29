@@ -144,8 +144,8 @@
         private Label Title;
         private PictureBox pictureBox1;
         private PictureBox pictureBox2;
-        private TextBox textUsername;
-        private TextBox textPassword;
+        public TextBox textUsername;
+        public TextBox textPassword;
         private Button buttonLogin;
         private Label labelExit;
     }

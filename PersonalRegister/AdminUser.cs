@@ -8,13 +8,26 @@ namespace PersonalRegister
 {
     public class AdminUser : IUserOperations
     {
-        private List<string> employeeList = new List<string>(); // Lista för anställda
+        public List<string> employeeList = new List<string>(); // Lista för anställda
         private Dictionary<string, string> employeeDictionary = new Dictionary<string, string>(); // Dictionary för anställda
+        IUserOperations IUserOperations;
 
         public AdminUser()
         {
             LoadEmployeesFromDatabase(); // Ladda anställda från databasen när klassen initieras
         }
+
+        public AdminUser(bool test, IUserOperations I)
+        {
+            IUserOperations = I;
+        }
+
+
+        public AdminUser(bool test)
+        {
+
+        }
+
 
         // Ladda data från databasen till List och Dictionary
         private void LoadEmployeesFromDatabase()   
@@ -59,7 +72,7 @@ namespace PersonalRegister
             return DatabaseHelper.ExecuteQuery("SELECT * FROM Users");
         }
 
-        public DataTable GetEmployeeById(string uniqueID)
+        public virtual DataTable GetEmployeeById(string uniqueID)
         {
             return DatabaseHelper.ExecuteQuery(
                 "SELECT * FROM Users WHERE UniqueID = @UniqueID",
@@ -67,7 +80,8 @@ namespace PersonalRegister
             );
         }
 
-        public void UpdateEmployee(string uniqueID, string newRole)
+
+        public virtual void UpdateEmployee(string uniqueID, string newRole)
         {
             DatabaseHelper.ExecuteNonQuery(
                 "UPDATE Users SET Role = @Role WHERE UniqueID = @UniqueID",
@@ -92,7 +106,7 @@ namespace PersonalRegister
             }
         }
 
-        public void DeleteEmployee(string uniqueID)
+        public virtual void DeleteEmployee(string uniqueID)
         {
             DatabaseHelper.ExecuteNonQuery(
                 "DELETE FROM Users WHERE UniqueID = @UniqueID",
@@ -105,12 +119,12 @@ namespace PersonalRegister
             employeeDictionary.Remove(uniqueID);
         }
 
-        public List<string> GetAllEmployeesList()
+        public virtual List<string> GetAllEmployeesList()
         {
             return new List<string>(employeeList);
         }
 
-        public Dictionary<string, string> GetAllEmployeesDictionary()
+        public virtual Dictionary<string, string> GetAllEmployeesDictionary()
         {
             return new Dictionary<string, string>(employeeDictionary);
         }

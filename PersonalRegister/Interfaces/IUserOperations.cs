@@ -15,7 +15,6 @@ namespace PersonalRegister.Interfaces
         DataTable GetEmployeeById(string uniqueID);
         void UpdateEmployee(string uniqueID, string newRole);
         void DeleteEmployee(string uniqueID);
-
         List<string> GetAllEmployeesList();
         Dictionary<string, string> GetAllEmployeesDictionary();
     }

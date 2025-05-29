@@ -17,6 +17,9 @@ namespace PersonalRegister
         public bool CanDeleteEmployee => true;
         public bool CanViewEmployee => true;
 
+        public string getUser() {  return username; }
+        public string getPassword() { return password; }
+
         public bool CheckLogin(string uName, string pw) => uName == username && pw == password;
     }
 
@@ -31,6 +34,9 @@ namespace PersonalRegister
         public bool CanDeleteEmployee => true;
         public bool CanViewEmployee => true;
 
+        public string getUser() { return username; }
+        public string getPassword() { return password; }
+
         public bool CheckLogin(string uName, string pw) => uName == username && pw == password;
     }
 
@@ -43,6 +49,9 @@ namespace PersonalRegister
         public bool CanUpdateEmployee => false;
         public bool CanDeleteEmployee => false;
         public bool CanViewEmployee => true;
+
+        public string getUser() { return username; }
+        public string getPassword() { return password; }
 
         public bool CheckLogin(string uName, string pw) => uName == username && pw == password;
     }

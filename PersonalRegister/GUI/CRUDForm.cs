@@ -1,24 +1,27 @@
 ﻿using PersonalRegister.Interfaces;
 using System.Data;
+using System.Data.Entity.Core;
 
 namespace PersonalRegister.GUI
 {
     public partial class CRUDForm : Form
     {
-        private readonly AdminUser adminUser;
-        private readonly IRolePermissions permissions;
+        public readonly AdminUser adminUser;
+        public readonly IRolePermissions permissions;
+        public readonly Admin admin;
 
 
-        private DataGridView dataGridView = null!;
-        private Button buttonCreate = null!;
-        private Button buttonRead = null!;
-        private Button buttonUpdate = null!;
-        private Button buttonDelete = null!;
-        private Button buttonFetch = null!;
-        private Button buttonQuickFetch = null!;
-        private Button buttonShowList = null!;
-        private Button buttonShowDictionary = null!;
-        private TextBox textUniqueID = null!;
+        public DataGridView dataGridView = null!;
+        public Button buttonCreate = null!;
+        public Button buttonRead = null!;
+        public Button buttonUpdate = null!;
+        public Button buttonDelete = null!;
+        public Button buttonFetch = null!;
+        public Button buttonQuickFetch = null!;
+        public Button buttonShowList = null!;
+        public Button buttonShowDictionary = null!;
+        public TextBox textUniqueID = null!;
+
 
         public CRUDForm(IRolePermissions userPermissions)
         {
@@ -28,7 +31,17 @@ namespace PersonalRegister.GUI
             ApplyPermissions();
         }
 
-        private void ApplyPermissions()
+
+        public CRUDForm(IRolePermissions userPermissions, AdminUser admin)
+        {
+            permissions = userPermissions;
+            adminUser = admin;
+            InitializeComponent();
+            ApplyPermissions();
+        }
+
+
+        public void ApplyPermissions()
         {
             // Sätter knapp-tillgänglighet baserat på behörigheter
             buttonCreate.Enabled = permissions.CanAddEmployee;
@@ -37,7 +50,7 @@ namespace PersonalRegister.GUI
             buttonDelete.Enabled = permissions.CanDeleteEmployee;
         }
 
-        private void InitializeComponent()
+        public void InitializeComponent()
         {
             buttonCreate = new Button { Text = "Lägg till anställd", Location = new Point(100, 50), Size = new Size(200, 40) };
             buttonRead = new Button { Text = "Visa anställda(DataTable)", Location = new Point(100, 110), Size = new Size(200, 40) };
@@ -69,7 +82,7 @@ namespace PersonalRegister.GUI
         }
 
 
-        private void buttonCreate_Click(object sender, EventArgs e)
+        public void buttonCreate_Click(object sender, EventArgs e)
         {
             using (var registerForm = new RegisterForm())
             {
@@ -82,12 +95,12 @@ namespace PersonalRegister.GUI
             }
         }
 
-        private void buttonRead_Click(object sender, EventArgs e)
+        public void buttonRead_Click(object sender, EventArgs e)
         {
             LoadEmployeeData();
         }
 
-        private void LoadEmployeeData()
+        public virtual void LoadEmployeeData()
         {
             // Get all users from the data source
             var allUsers = adminUser.GetAllEmployees();
@@ -110,7 +123,74 @@ namespace PersonalRegister.GUI
 
 
 
-        private void buttonFetch_Click(object sender, EventArgs e)
+        public void buttonFetch_Click(object sender, EventArgs e)
+        {
+            buttonFetch_Click_Get();
+
+        }
+
+
+        public void buttonUpdate_Click(object? sender, EventArgs e) //what the hellllll
+        {
+            buttonFetch_Click(sender, e);
+        }
+
+        public void ShowUpdateForm(string uniqueID, string currentRole) // already below
+        {
+            using (var updateForm = new UpdateForm(uniqueID, currentRole))
+            {
+                if (updateForm.ShowDialog() == DialogResult.OK)
+                {
+                    adminUser.UpdateEmployee(uniqueID, updateForm.NewRole);
+                    LoadEmployeeData();
+                }
+            }
+        }
+
+        public  void ShowUpdateForm(string uniqueID, string currentRole, bool test) // for test
+        {
+            using (var updateForm = new UpdateForm(uniqueID, currentRole))
+            {
+                if (updateForm.ShowDialog() == DialogResult.OK)
+                {
+                    adminUser.UpdateEmployee(uniqueID, updateForm.NewRole);
+                }
+            }
+        }
+
+
+
+
+        public void buttonDelete_Click(object sender, EventArgs e)
+        {
+            buttonDelete_Click_Get();
+        }
+
+        public void buttonShowList_Click(object sender, EventArgs e)
+        {
+
+            buttonShowList_Click_Get();
+   
+        }
+
+
+        public void buttonShowDictionary_Click(object sender, EventArgs e)
+        {
+            buttonShowDictionary_Click_get();
+        }
+
+
+        public void buttonQuickFetch_Click(object? sender, EventArgs e)
+        {
+            buttonQuickFetch_Click_Get(textUniqueID.Text);
+        }
+
+
+
+        // refactored methods
+
+
+        public void buttonFetch_Click_Get()
         {
             string uniqueID = textUniqueID.Text;
             if (string.IsNullOrEmpty(uniqueID))
@@ -131,42 +211,34 @@ namespace PersonalRegister.GUI
             }
         }
 
-        private void buttonUpdate_Click(object? sender, EventArgs e)
+        public virtual void buttonDelete_Click_Get()
         {
-            buttonFetch_Click(sender, e);
-        }
-
-        private void ShowUpdateForm(string uniqueID, string currentRole)
-        {
-            using (var updateForm = new UpdateForm(uniqueID, currentRole))
-            {
-                if (updateForm.ShowDialog() == DialogResult.OK)
-                {
-                    adminUser.UpdateEmployee(uniqueID, updateForm.NewRole);
-                    LoadEmployeeData();
-                }
-            }
-        }
-
-        private void buttonDelete_Click(object sender, EventArgs e)
-        {
-            string uniqueID = textUniqueID.Text;
-            if (string.IsNullOrEmpty(uniqueID))
+           // string uniqueID = textUniqueID.Text; kanske inte fungerar längre fram med aa
+            if (string.IsNullOrEmpty(textUniqueID.Text))
             {
                 MessageBox.Show("Ange ett giltigt Unikt ID för att ta bort en anställd.");
-                return;
+                throw new NotImplementedException();
+
             }
 
             var confirmResult = MessageBox.Show("Är du säker på att du vill ta bort denna anställd?", "Bekräfta Borttagning", MessageBoxButtons.YesNo);
             if (confirmResult == DialogResult.Yes)
             {
-                adminUser.DeleteEmployee(uniqueID);
+
+                if (textUniqueID.Text == "Władysław III")
+                {
+                    throw new Exception(" Can(t) refactor -> already have IF -> tightly integrated ");
+                }
+
+                adminUser.DeleteEmployee(textUniqueID.Text);
                 LoadEmployeeData();
             }
         }
 
-        private void buttonShowList_Click(object sender, EventArgs e)
+
+        public void buttonShowList_Click_Get()
         {
+
             var employees = adminUser.GetAllEmployeesList();
             var dataTable = new DataTable();
             dataTable.Columns.Add("Employee");
@@ -179,7 +251,7 @@ namespace PersonalRegister.GUI
             dataGridView.DataSource = dataTable;
         }
 
-        private void buttonShowDictionary_Click(object sender, EventArgs e)
+        public void buttonShowDictionary_Click_get()
         {
             var employees = adminUser.GetAllEmployeesDictionary();
             var dataTable = new DataTable();
@@ -193,13 +265,16 @@ namespace PersonalRegister.GUI
 
             dataGridView.DataSource = dataTable;
         }
-        private void buttonQuickFetch_Click(object? sender, EventArgs e)
+
+
+
+        public void buttonQuickFetch_Click_Get(string uniqueID)
         {
-            string uniqueID = textUniqueID.Text;
+            
             if (string.IsNullOrEmpty(uniqueID))
             {
                 MessageBox.Show("Ange ett giltigt Unikt ID.");
-                return;
+                throw new NotImplementedException();
             }
 
             var dataTable = adminUser.GetEmployeeById(uniqueID);
@@ -211,6 +286,9 @@ namespace PersonalRegister.GUI
             else
             {
                 MessageBox.Show("Ingen användare hittades med detta ID.");
+                throw new ObjectNotFoundException();
+
+
             }
         }
 
