@@ -1,5 +1,6 @@
 ﻿using PersonalRegister.Interfaces;
 using System.Data;
+using System.Data.Entity.Core;
 
 namespace PersonalRegister.GUI
 {
@@ -8,7 +9,7 @@ namespace PersonalRegister.GUI
         private readonly AdminUser adminUser;
         private readonly IRolePermissions permissions;
 
-        private DataGridView dataGridView = null!;
+        public DataGridView dataGridView = null!;
         private Button buttonCreate = null!;
         private Button buttonRead = null!;
         private Button buttonUpdate = null!;
@@ -17,7 +18,7 @@ namespace PersonalRegister.GUI
         private Button buttonQuickFetch = null!;
         private Button buttonShowList = null!;
         private Button buttonShowDictionary = null!;
-        private TextBox textUniqueID = null!;
+        public TextBox textUniqueID = null!;
 
         public CRUDForm(IRolePermissions userPermissions, IDatabaseHelper databaseHelper)
         {
@@ -212,6 +213,108 @@ namespace PersonalRegister.GUI
                 MessageBox.Show("Ingen användare hittades med detta ID.");
             }
         }
+
+        public void buttonFetch_Click_Get()
+        {
+            string uniqueID = textUniqueID.Text;
+            if (string.IsNullOrEmpty(uniqueID))
+            {
+                MessageBox.Show("Ange ett giltigt Unikt ID.");
+                return;
+            }
+
+            var dataTable = adminUser.GetEmployeeById(uniqueID);
+            if (dataTable.Rows.Count > 0)
+            {
+                string role = dataTable.Rows[0]["Role"].ToString();
+                ShowUpdateForm(uniqueID, role);
+            }
+            else
+            {
+                MessageBox.Show("Ingen användare hittades med detta ID.");
+            }
+        }
+
+        public virtual void buttonDelete_Click_Get()
+        {
+            // string uniqueID = textUniqueID.Text; kanske inte fungerar längre fram med aa
+            if (string.IsNullOrEmpty(textUniqueID.Text))
+            {
+                MessageBox.Show("Ange ett giltigt Unikt ID för att ta bort en anställd.");
+                throw new ArgumentNullException();
+
+            }
+
+            var confirmResult = MessageBox.Show("Är du säker på att du vill ta bort denna anställd?", "Bekräfta Borttagning", MessageBoxButtons.YesNo);
+            if (confirmResult == DialogResult.Yes)
+            {
+
+                if (textUniqueID.Text == "Władysław III")
+                {
+                    throw new Exception(" Can(t) refactor -> already have IF -> tightly integrated ");
+                }
+
+                adminUser.DeleteEmployee(textUniqueID.Text);
+                LoadEmployeeData();
+            }
+        }
+
+
+        public void buttonShowList_Click_Get()
+        {
+
+            var employees = adminUser.GetAllEmployeesList();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("Employee");
+
+            foreach (var employee in employees)
+            {
+                dataTable.Rows.Add(employee);
+            }
+
+            dataGridView.DataSource = dataTable;
+        }
+
+        public void buttonShowDictionary_Click_get()
+        {
+            var employees = adminUser.GetAllEmployeesDictionary();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("UniqueID");
+            dataTable.Columns.Add("Role");
+
+            foreach (var kvp in employees)
+            {
+                dataTable.Rows.Add(kvp.Key, kvp.Value);
+            }
+
+            dataGridView.DataSource = dataTable;
+        }
+
+
+
+        public void buttonQuickFetch_Click_Get(string uniqueID)
+        {
+
+            if (string.IsNullOrEmpty(uniqueID))
+            {
+                MessageBox.Show("Ange ett giltigt Unikt ID.");
+                throw new ArgumentNullException();
+            }
+
+            var dataTable = adminUser.GetEmployeeById(uniqueID);
+            if (dataTable.Rows.Count > 0)
+            {
+                string role = dataTable.Rows[0]["Role"].ToString();
+                MessageBox.Show($"Användare hittad:\nID: {uniqueID}\nRoll: {role}");
+            }
+            else
+            {
+                MessageBox.Show("Ingen användare hittades med detta ID.");
+                throw new ObjectNotFoundException();
+
+            }
+        }
+
 
     }
 }
