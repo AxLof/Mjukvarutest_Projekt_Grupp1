@@ -15,7 +15,8 @@ namespace PersonalRegister
             var db = new DatabaseHelper();
             db.InitializeDatabase();
             db.CreateCandidateTable();
-            var candidates = CandidateImporter.LoadCandidatesFromCsv("candidate_data.csv");
+            var readerHelper = new StreamReaderHelper();
+            var candidates = CandidateImporter.LoadCandidatesFromCsv("candidate_data.csv", readerHelper);
             foreach (var c in candidates)
             {
                 db.InsertCandidate(c);
