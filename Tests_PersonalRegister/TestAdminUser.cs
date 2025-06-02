@@ -1,4 +1,4 @@
-using Microsoft.VisualBasic.ApplicationServices;
+ï»¿using Microsoft.VisualBasic.ApplicationServices;
 using Moq;
 using PersonalRegister;
 using PersonalRegister.Interfaces;
@@ -155,8 +155,8 @@ namespace Tests_PersonalRegister
 
             AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
 
-            /* Jag har sagt åt min mock databas att slänga ett SQL-error, och här kollar jag så att inte
-               AdminUser slänger vidare detta exception så att programmet krashar.*/
+            /* Jag har sagt Ã¥t min mock databas att slÃ¤nga ett SQL-error, och hÃ¤r kollar jag sÃ¥ att inte
+               AdminUser slÃ¤nger vidare detta exception sÃ¥ att programmet krashar.*/
             var thrownExceptions = Record.Exception(() => testUser.AddEmployee(key, "APA"));
             Assert.Null(thrownExceptions);
 
@@ -166,9 +166,9 @@ namespace Tests_PersonalRegister
         [Fact]
         public void UpdateEmployeeBadInput_ShowsSuccessWhenNoUserIsUpdated()
         {
-            /* Detta testet och testet nedanför är skrivet för att uppmärksamma det faktum att 
-               de aktuella metoderna utgår ifrån att Uppdatering/Borttagning alltid fungerar
-               korrekt trots att ingen rad i databasen påverkats.*/
+            /* Detta testet och testet nedanfÃ¶r Ã¤r skrivet fÃ¶r att uppmÃ¤rksamma det faktum att 
+               de aktuella metoderna utgÃ¥r ifrÃ¥n att Uppdatering/Borttagning alltid fungerar
+               korrekt trots att ingen rad i databasen pÃ¥verkats.*/
 
             DataTable testTable = new DataTable();
             testTable.Columns.Add("UniqueID", typeof(string));
@@ -188,7 +188,7 @@ namespace Tests_PersonalRegister
             AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
             testUser.UpdateEmployee("BJE43E", "APA");
 
-            // Kollar så att inget "success" meddelande visas om man uppdaterar en användare som inte finns.
+            // Kollar sÃ¥ att inget "success" meddelande visas om man uppdaterar en anvÃ¤ndare som inte finns.
             string lowercaseOutput = consoleOutput.ToString().ToLower();
             Assert.False(lowercaseOutput.Contains("uppdaterad") || lowercaseOutput.Contains("uppdaterades")
                         || lowercaseOutput.Contains("lyckades") || lowercaseOutput.Contains("lyckad"));
@@ -216,7 +216,7 @@ namespace Tests_PersonalRegister
             AdminUser testUser = new AdminUser(mockDatabaseHelper.Object);
             testUser.DeleteEmployee("BJE43E");
 
-            // Kollar så att inget "success" meddelande visas om man raderar en användare som inte finns.
+            // Kollar sÃ¥ att inget "success" meddelande visas om man raderar en anvÃ¤ndare som inte finns.
             string lowercaseOutput = consoleOutput.ToString().ToLower();
             Assert.False(lowercaseOutput.Contains("borttagen") || lowercaseOutput.Contains("raderad")
                         || lowercaseOutput.Contains("togs bort") || lowercaseOutput.Contains("raderades"));
@@ -230,8 +230,8 @@ namespace Tests_PersonalRegister
             mockDatabaseHelper.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
             .Throws(new SQLiteException("Connection failed"));
 
-            /* Jag har sagt åt min mock databas att slänga ett SQL-error, och här kollar jag så att inte
-               AdminUser slänger vidare detta exception så att programmet krashar.*/
+            /* Jag har sagt Ã¥t min mock databas att slÃ¤nga ett SQL-error, och hÃ¤r kollar jag sÃ¥ att inte
+               AdminUser slÃ¤nger vidare detta exception sÃ¥ att programmet krashar.*/
             var thrownException = Record.Exception(() => new AdminUser(mockDatabaseHelper.Object));
 
             Assert.Null(thrownException);

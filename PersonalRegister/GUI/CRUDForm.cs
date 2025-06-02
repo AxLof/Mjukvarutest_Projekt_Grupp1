@@ -87,7 +87,7 @@ namespace PersonalRegister.GUI
             LoadEmployeeData();
         }
 
-        private void LoadEmployeeData()
+        public void LoadEmployeeData()
         {
             // Get all users from the data source
             var allUsers = adminUser.GetAllEmployees();
