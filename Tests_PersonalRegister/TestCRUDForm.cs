@@ -30,10 +30,10 @@ namespace Tests_PersonalRegister
             var mockDatabase = new Mock<IDatabaseHelper>();
             mockDatabase.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
                 .Returns(testTable);
-            
+
             var form = new CRUDForm(mockedPerm.Object, mockDatabase.Object);
             Assert.Throws<ArgumentNullException>(() => form.buttonQuickFetch_Click_Get(id));
-            
+
         }
 
 
@@ -102,9 +102,15 @@ namespace Tests_PersonalRegister
             var mockOperation = new Mock<AdminUser>(true);
 
             var testTable = new DataTable();
+            var fakelist = new List<string>() { $"{uniqueID}: {role}" };
+
             testTable.Columns.Add("UniqueID", typeof(string));
             testTable.Columns.Add("Role", typeof(string));
-            testTable.Rows.Add($"{uniqueID}: {role}");
+            testTable.Columns.Add("Employee", typeof(string));
+            testTable.Rows.Add(fakelist[0]);
+
+
+            testTable.Rows.Add(fakelist);
 
             var mockDatabase = new Mock<IDatabaseHelper>();
             mockDatabase.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
@@ -114,7 +120,7 @@ namespace Tests_PersonalRegister
             form.buttonShowList_Click_Get();
             var realtable = (DataTable)form.dataGridView.DataSource;
 
-            Assert.Equal("Greg: Gsreg", realtable.Rows[0][0]);
+            Assert.Equal(fakelist[0], realtable.Rows[0][0]);
 
         }
 
@@ -137,46 +143,83 @@ namespace Tests_PersonalRegister
             Assert.Throws<ArgumentNullException>(() => form.buttonDelete_Click_Get());
         }
 
-        //[Fact]
-        //public void buttonDelete_Click_Get_Invalid_ID_DeletesCorrectEmploye()
-        //{ //lazy test this time need whole new structure
+        [Fact]
+        public void buttonDelete_Click_Get_Invalid_ID_DeletesCorrectEmploye()
+        { //lazy test this time need whole new structure
 
-        //    var mockedPerm = new Mock<IRolePermissions>();
-        //    var mockOperation = new Mock<AdminUser>(true);
-        //    var form = new CRUDForm(mockedPerm.Object, mockOperation.Object);
-        //    form.textUniqueID.Text = "Władysław III";
-        //    Assert.Throws<Exception>(() => form.buttonDelete_Click_Get()); // instead check that targeted "branch" can be reached since same user would be deleted
+            var mockedPerm = new Mock<IRolePermissions>();
+            var mockDatabase = new Mock<IDatabaseHelper>();
+            DataTable testTable = new DataTable();
+            testTable.Columns.Add("UniqueID", typeof(string));
+            testTable.Columns.Add("Role", typeof(string));
+            mockDatabase.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+               .Returns(testTable);
 
-        //}
+            var form = new CRUDForm(mockedPerm.Object, mockDatabase.Object);
+            form.textUniqueID.Text = "Władysław III";
+            Assert.Throws<Exception>(() => form.buttonDelete_Click_Get()); // instead check that targeted "branch" can be reached since same user would be deleted
 
-        //[Fact]
-        //public void ShowUpdateForm_Correct_update()
-        //{
-
-        //    var mockedPerm = new Mock<IRolePermissions>();
-        //    var mockOperation = new Mock<AdminUser>(true);
-
-        //    mockOperation.Setup(_ => _.UpdateEmployee("Michinomiya", "Hirohito")).Verifiable();
-        //    var form = new CRUDForm(mockedPerm.Object, mockOperation.Object);
+        }
 
 
+            [Theory]
+            [InlineData("")]
+            [InlineData(null)]
+            public void buttonFetch_Click_Get_Test_NullEmpty_ID(string ID)
+            {
 
-        //    form.ShowUpdateForm("Michinomiya", "Hirohito", true);
+            var mockedPerm = new Mock<IRolePermissions>();
+            var mockDatabase = new Mock<IDatabaseHelper>();
+            DataTable testTable = new DataTable();
 
-        //    mockOperation.Verify(_ => _.UpdateEmployee("Michinomiya", "Hirohito"), Times.Once);
+            testTable.Columns.Add("Role", typeof(string));
 
-
-        //}
-
-        //[Theory]
-        //[InlineData("",null)]
-        //public void buttonFetch_Click_Get_Test_NullEmpty_ID(string ID)
-        //{
+            mockDatabase.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+            .Returns(testTable);
 
 
+            var form = new CRUDForm(mockedPerm.Object, mockDatabase.Object);
+            form.textUniqueID.Text = ID;
+
+            Assert.Throws<System.ArgumentNullException>(() => form.buttonDelete_Click_Get());
 
 
 
-        //}
+        }
+        [Fact]
+        public void LoadEmployeeData_correct_data_test()
+        {
+
+            var mockedPerm = new Mock<IRolePermissions>();
+            var mockDatabase = new Mock<IDatabaseHelper>();
+            DataTable testTable = new DataTable();
+
+            testTable.Columns.Add("Role");
+            testTable.Columns.Add("UniqueID");
+
+            testTable.Rows.Add("Olof");
+
+            mockDatabase.Setup(db => db.ExecuteQuery("SELECT UniqueID, Role FROM Users"))
+                   .Returns(testTable);
+
+            var form = new CRUDForm(mockedPerm.Object, mockDatabase.Object);
+            var realtable = (DataTable)form.dataGridView.DataSource;
+
+            form.LoadEmployeeData();
+
+
+            Assert.Equal(testTable.Rows[0][0], realtable.Rows[0][0]);
+
+
+        } //no work
+
+        [Fact]
+        public void buttonCreate_Click_test()
+        {
+
+
+        }
     }
-}
+    }
+
+

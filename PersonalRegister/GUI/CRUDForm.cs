@@ -8,6 +8,7 @@ namespace PersonalRegister.GUI
     {
         private readonly AdminUser adminUser;
         private readonly IRolePermissions permissions;
+        IDatabaseHelper IDatabaseHelper_;
 
         public DataGridView dataGridView = null!;
         private Button buttonCreate = null!;
@@ -26,6 +27,7 @@ namespace PersonalRegister.GUI
             adminUser = new AdminUser(databaseHelper);
             InitializeComponent();
             ApplyPermissions();
+            IDatabaseHelper_ = databaseHelper;
         }
 
         private void ApplyPermissions()
@@ -87,7 +89,7 @@ namespace PersonalRegister.GUI
             LoadEmployeeData();
         }
 
-        private void LoadEmployeeData()
+        public void LoadEmployeeData()
         {
             // Get all users from the data source
             var allUsers = adminUser.GetAllEmployees();
@@ -136,7 +138,7 @@ namespace PersonalRegister.GUI
             buttonFetch_Click(sender, e);
         }
 
-        private void ShowUpdateForm(string uniqueID, string currentRole)
+        public void ShowUpdateForm(string uniqueID, string currentRole)  // dont work
         {
             using (var updateForm = new UpdateForm(uniqueID, currentRole))
             {
@@ -220,6 +222,7 @@ namespace PersonalRegister.GUI
             if (string.IsNullOrEmpty(uniqueID))
             {
                 MessageBox.Show("Ange ett giltigt Unikt ID.");
+
                 return;
             }
 
