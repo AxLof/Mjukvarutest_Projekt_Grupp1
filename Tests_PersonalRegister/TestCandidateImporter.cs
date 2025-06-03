@@ -31,6 +31,16 @@ namespace Tests_PersonalRegister
         }
 
         [Fact]
+        public void TestNullReader_ThrowsNullReferenceException()
+        {
+            var mockReader = new Mock<IStreamReaderHelper>();
+            mockReader.Setup(f => f.Create(It.IsAny<string>())).Returns(new StringReader(null));
+
+            Assert.Throws<NullReferenceException>(() =>
+                CandidateImporter.LoadCandidatesFromCsv("dummy.csv", mockReader.Object));
+        }
+
+        [Fact]
         public void TestHeaderOnlyInput_ReturnEmptyList()
         {
             string csv = "Username,Password,Salary,Age,City,Address\n";
@@ -82,6 +92,34 @@ namespace Tests_PersonalRegister
             Assert.Single(result);
             Assert.Equal("fbreston0", result[0].Username);
             Assert.Equal("29 Nelson Park", result[0].Address);
+        }
+
+        [Fact]
+        public void TestNegativeSalaryOrAge_RowIsSkipped()
+        {
+            string csv = "Username,Password,Salary,Age,City,Address\n" +
+                         "user5,pass5,-5000,25,city5,address5\n" +
+                         "user6,pass6,6000,-26,city6,address6\n" +
+                         "user7,pass7,7000,27,city7,address7";
+            var mockReader = new Mock<IStreamReaderHelper>();
+            mockReader.Setup(f => f.Create(It.IsAny<string>())).Returns(new StringReader(csv));
+
+            var result = CandidateImporter.LoadCandidatesFromCsv("dummy.csv", mockReader.Object);
+
+            Assert.Single(result);
+            Assert.Equal("user5", result[0].Username);
+        }
+
+        [Fact]
+        public void TestRowWithOnlyDelimiters_ReturnsEmptyList()
+        {
+            string csv = "Username,Password,Salary,Age,City,Address\n,,,,,";
+            var mockReader = new Mock<IStreamReaderHelper>();
+            mockReader.Setup(f => f.Create(It.IsAny<string>())).Returns(new StringReader(csv));
+
+            var result = CandidateImporter.LoadCandidatesFromCsv("dummy.csv", mockReader.Object);
+
+            Assert.Empty(result); // This will fail with FormatException
         }
     }
 }
